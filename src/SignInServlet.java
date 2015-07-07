@@ -9,18 +9,14 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 /*
-import facebook4j.Facebook;
-import facebook4j.FacebookException;
-import facebook4j.FacebookFactory;
-import facebook4j.ResponseList;
-*/
-/*
 import org.json.*;
 import org.json.JSONArray;
 import org.json.JSONObject;
 */
+import facebook4j.*;
+import timeline.AuthFB;
+import timeline.AuthTwitter;
 import twitter4j.*;
-import twitter4j.conf.ConfigurationBuilder;
 
 /**
  * Servlet implementation class SignInServlet
@@ -41,26 +37,29 @@ public class SignInServlet extends HttpServlet {
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-/*Facebook facebook = new FacebookFactory().getInstance();
-        
 		//Facebook
-        try {
-			ResponseList<facebook4j.Post> feed = facebook.getHome();
-			request.setAttribute("feed", feed);
-		} catch (FacebookException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}*/
+		facebook4j.conf.ConfigurationBuilder cb = new facebook4j.conf.ConfigurationBuilder();
+		AuthFB tokens_facebook = new AuthFB();
+		
+		cb.setDebugEnabled(true)
+		  .setOAuthAppId(tokens_facebook.OAuthAppId)
+		  .setOAuthAppSecret(tokens_facebook.OAuthAppSecret)
+		  .setOAuthAccessToken(tokens_facebook.OAuthAccessToken)
+		  .setOAuthPermissions("read_stream");
+		FacebookFactory ff = new FacebookFactory(cb.build());
+		Facebook facebook = ff.getInstance();
         
         //Twitter
-		ConfigurationBuilder cb = new ConfigurationBuilder();
-	    cb.setDebugEnabled(true)
-	            .setOAuthConsumerKey("OcJo7XALkdADVC0tpEelo8c1y")
-	            .setOAuthConsumerSecret("I6kKqOB1mXtLPy0g1DboiJY422iqflsodwUbkr4XUQuj09cQrl")
-	            .setOAuthAccessToken("1285039172-SXLtypoM69niNyezQKU6WBJEd1FTGiMN5lkBid1")
-	            .setOAuthAccessTokenSecret("GZuy1Vg7sfzO22etlEnTfNCkHduvrC6FCSxiGZMGRMBM6");
+		AuthTwitter tokens_twitter = new AuthTwitter();
+		
+		twitter4j.conf.ConfigurationBuilder cb1 = new twitter4j.conf.ConfigurationBuilder();
+		cb1.setDebugEnabled(true)
+	            .setOAuthConsumerKey(tokens_twitter.OAuthConsumerKey)
+	            .setOAuthConsumerSecret(tokens_twitter.OAuthConsumerSecret)
+	            .setOAuthAccessToken(tokens_twitter.OAuthAccessToken)
+	            .setOAuthAccessTokenSecret(tokens_twitter.OAuthAccessTokenSecret);
 
-	    TwitterFactory tf = new TwitterFactory(cb.build());
+	    TwitterFactory tf = new TwitterFactory(cb1.build());
 	    Twitter twitter = tf.getInstance();
 /*
 	    JSONObject obj = null;
@@ -85,13 +84,14 @@ public class SignInServlet extends HttpServlet {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+        try {
+			request.getSession().setAttribute("facebook", facebook.getHome());
+			request.getSession().setAttribute("facebook_user", facebook.getMe());
+		} catch (FacebookException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
         request.getRequestDispatcher("/index.jsp").forward(request, response);
-        
-        /*request.getSession().setAttribute("facebook", facebook);
-        StringBuffer callbackURL = request.getRequestURL();
-        int index = callbackURL.lastIndexOf("/");
-        callbackURL.replace(index, callbackURL.length(), "").append("CallbackServlet");
-        response.sendRedirect(facebook.getOAuthAuthorizationURL(callbackURL.toString()));*/
 	}
 
 	/**

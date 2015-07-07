@@ -8,8 +8,10 @@
 <title>Insert title here</title>
 </head>
 <body>
-<h1>Welcome on Facebook, !</h1>
-<p>This spot is reserved for Facebook timeline, once it's fixed.</p>
+<h1>Welcome on Facebook, ${facebook_user}!</h1>
+	<c:forEach var="facebook_post" items="${facebook}"> 
+    	${facebook_post}<br /> 
+    </c:forEach>
 
 <h1>Welcome on Twitter, ${user}!</h1>
 	<c:forEach var="post" items="${timeline}"> 
