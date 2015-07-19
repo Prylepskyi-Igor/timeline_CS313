@@ -8,14 +8,20 @@
 <title>Insert title here</title>
 </head>
 <body>
-<h1>Welcome on Facebook, ${facebook_user}!</h1>
-	<c:forEach var="facebook_post" items="${facebook}"> 
-    	${facebook_post}<br /> 
+	<h1>Facebook timeline: </h1>
+	<c:forEach var="post" items="${facebook}">
+    	<div style="color: green;">${post}</div><br />
     </c:forEach>
 
-<h1>Welcome on Twitter, ${user}!</h1>
-	<c:forEach var="post" items="${timeline}"> 
-    	${post}<br /> 
+	<h1>${user}'s Twitter timeline: </h1>
+	<c:forEach var="post" items="${twitter}"> 
+    	<div style="color: green;">${post.getUser().getName()}</div><br />  
+    	<div style="color: blue;">${post.getText()}</div><br /><br />
+    </c:forEach>
+    
+    <h1>Instagram timeline: </h1>
+    <c:forEach var="post" items="${instagram}"> 
+    	<div style="color: green;">${post}</div><br />
     </c:forEach>
 </body>
 </html>

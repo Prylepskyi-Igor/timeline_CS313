@@ -1,6 +1,7 @@
 
 
 import java.io.IOException;
+import java.util.List;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -8,13 +9,13 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-/*
-import org.json.*;
-import org.json.JSONArray;
-import org.json.JSONObject;
-*/
+import com.sola.instagram.InstagramSession;
+import com.sola.instagram.auth.InstagramAuthentication;
+import com.sola.instagram.exception.InstagramException;
+
 import facebook4j.*;
 import timeline.AuthFB;
+import timeline.AuthInstagram;
 import timeline.AuthTwitter;
 import twitter4j.*;
 
@@ -61,31 +62,73 @@ public class SignInServlet extends HttpServlet {
 
 	    TwitterFactory tf = new TwitterFactory(cb1.build());
 	    Twitter twitter = tf.getInstance();
-/*
-	    JSONObject obj = null;
+	    List<Status> twitterTimeleine = null;
 		try {
-			obj = new JSONObject(twitter.getHomeTimeline());
-		} catch (TwitterException e1) {
+			twitterTimeleine = twitter.getHomeTimeline();
+		} catch (TwitterException e2) {
+			// TODO Auto-generated catch block
+			e2.printStackTrace();
+		}
+	
+	    //Instagram
+		InstagramSession instagram = new InstagramSession();
+		
+		/*InstagramAuthentication auth =  new InstagramAuthentication();
+		String authUrl = null;
+		try {
+			authUrl = auth.setRedirectUri(AuthInstagram.CALLBACK_URL)
+			                     .setClientSecret(AuthInstagram.CLIENT_SECRET)
+			                     .setClientId(AuthInstagram.CLIENT_ID)
+			                     .getAuthorizationUri();
+		} catch (InstagramException e2) {
+			// TODO Auto-generated catch block
+			e2.printStackTrace();
+		}
+		
+		try {
+			if(request.getParameter("code").isEmpty())
+				instagram = auth.build(request.getParameter("code"));
+			else
+				request.getRequestDispatcher(authUrl).forward(request, response);
+		} catch (InstagramException e2) {
+			// TODO Auto-generated catch block
+			e2.printStackTrace();
+		}*/
+	    
+	    try {
+	    	if(instagram.getFeed(0).equals(null))
+    		{
+        		request.getSession().setAttribute("instagram", "No data to display!");
+    		}
+        	else
+        		request.getSession().setAttribute("instagram", instagram.getFeed(0));
+		} catch (InstagramException e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
-
-	    JSONArray arr = obj.getJSONArray("StatusJSONImpl");
-	    String[] posts = new String[256];
-	    for (int i = 0; i < arr.length(); i++)
-	    {
-	    	posts[i] = arr.getJSONObject(i).getString("text");
-	    }*/
-        
+	    
         try {
-			request.getSession().setAttribute("timeline", twitter.getHomeTimeline());
+        	if(twitter.equals(null))
+    		{
+        		request.getSession().setAttribute("twitter", "No data to display!");
+    		}
+        	else
+        		request.getSession().setAttribute("twitter", twitterTimeleine);
+			
 			request.getSession().setAttribute("user", twitter.verifyCredentials().getScreenName());
 		} catch (TwitterException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+        
         try {
-			request.getSession().setAttribute("facebook", facebook.getHome());
+        	if(facebook.getFeed().equals(null))
+    		{
+        		request.getSession().setAttribute("facebook", "No data to display!");
+    		}
+        	else
+        		request.getSession().setAttribute("facebook", facebook.getHome());
+        	
 			request.getSession().setAttribute("facebook_user", facebook.getMe());
 		} catch (FacebookException e) {
 			// TODO Auto-generated catch block
